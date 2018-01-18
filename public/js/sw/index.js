@@ -1,8 +1,9 @@
 self.addEventListener('install', function(event) {
   event.waitUntil(
-    // TODO: open a cache named 'wittr-static-v1'
-    // Add cache the urls from urlsToCache
-    caches.open('wittr-static-v1').then(function(cache) {
+    // TODO: change the site's theme, eg swap the vars in public/scss/_theme.scss
+    // Ensure at least $primary-color changes
+    // TODO: change cache name to 'wittr-static-v2'
+    caches.open('wittr-static-v2').then(function(cache) {
       return cache.addAll([
         '/',
         'js/main.js',
@@ -10,18 +11,22 @@ self.addEventListener('install', function(event) {
         'imgs/icon.png',
         'https://fonts.gstatic.com/s/roboto/v15/2UX7WLTfW3W8TclTUvlFyQ.woff',
         'https://fonts.gstatic.com/s/roboto/v15/d-6IYplOFocCacKzxwXSOD8E0i7KZn-EPnyo3HZu7kw.woff'
-      ])
+      ]);
     })
   );
 });
 
+self.addEventListener('activate', function(event) {
+  event.waitUntil(
+    // TODO: remove the old cache
+    caches.delete('wittr-static-v1')
+  );
+});
+
 self.addEventListener('fetch', function(event) {
-  // TODO: respond with an entry from the cache if there is one.
-  // If there isn't, fetch from the network.
   event.respondWith(
     caches.match(event.request).then(function(response) {
-      if (response) return response
-      return fetch(event.request)
+      return response || fetch(event.request);
     })
-  )
+  );
 });
